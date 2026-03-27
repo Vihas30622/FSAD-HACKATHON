@@ -1,36 +1,42 @@
 // ============================================================
-// DATABASE CONFIGURATION (MySQL)
+// DATABASE CONFIGURATION (SQLite)
 // ============================================================
 
-const mysql = require('mysql2/promise');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 require('dotenv').config();
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'indian_airline_booking',
-    port: process.env.DB_PORT || 3306,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    enableKeepAlive: true,
-    keepAliveInitialDelayMs: 0
+// Create database file path
+const dbPath = path.join(__dirname, '..', 'database', 'airline_booking.db');
+
+// Create database connection
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('✗ Database connection failed:', err.message);
+        process.exit(1);
+    }
+    console.log('✓ Database connected successfully');
 });
+
+// Enable foreign keys
+db.run('PRAGMA foreign_keys = ON');
 
 // Test database connection
 async function testConnection() {
-    try {
-        const connection = await pool.getConnection();
-        console.log('✓ Database connected successfully');
-        connection.release();
-    } catch (error) {
-        console.error('✗ Database connection failed:', error.message);
-        process.exit(1);
-    }
+    return new Promise((resolve, reject) => {
+        db.get('SELECT 1', (err) => {
+            if (err) {
+                console.error('✗ Database connection failed:', err.message);
+                reject(err);
+            } else {
+                console.log('✓ Database connected successfully');
+                resolve();
+            }
+        });
+    });
 }
 
 module.exports = {
-    pool,
+    db,
     testConnection
 };

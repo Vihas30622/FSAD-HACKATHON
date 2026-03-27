@@ -22,6 +22,7 @@
     "pdfkit": "^0.14.0",
     "qrcode": "^1.5.3",
     "socket.io": "^4.6.1",
+    "sqlite3": "^6.0.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

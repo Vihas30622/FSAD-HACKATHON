@@ -21,6 +21,9 @@ const adminRoutes = require('./routes/adminRoutes');
 const { errorHandler } = require('./middleware/errorHandler');
 const { authenticateToken } = require('./middleware/auth');
 
+// Database initialization
+const { initializeDatabase } = require('./database/initializeDb');
+
 // Load environment variables
 dotenv.config();
 
@@ -146,27 +149,40 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  console.log('');
-  console.log('╔════════════════════════════════════════╗');
-  console.log('║     Bharat Airways Flight Booking     ║');
-  console.log('║           Backend Server              ║');
-  console.log('╚════════════════════════════════════════╝');
-  console.log('');
-  console.log(`✈️  Server running on port: ${PORT}`);
-  console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
-  console.log(`📊 Node Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`💾 Database: ${process.env.DB_HOST || 'localhost'}`);
-  console.log('');
-  console.log('Endpoints:');
-  console.log(`  • GET  http://localhost:${PORT}/health`);
-  console.log(`  • POST http://localhost:${PORT}/auth/login`);
-  console.log(`  • GET  http://localhost:${PORT}/flights/search`);
-  console.log(`  • POST http://localhost:${PORT}/bookings`);
-  console.log('');
-  console.log('Ready to accept connections...');
-  console.log('');
-});
+// Start server with database initialization
+async function startServer() {
+  try {
+    // Initialize database
+    await initializeDatabase();
+
+    server.listen(PORT, () => {
+      console.log('');
+      console.log('╔════════════════════════════════════════╗');
+      console.log('║     Bharat Airways Flight Booking     ║');
+      console.log('║           Backend Server              ║');
+      console.log('╚════════════════════════════════════════╝');
+      console.log('');
+      console.log(`✈️  Server running on port: ${PORT}`);
+      console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+      console.log(`📊 Node Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`💾 Database: SQLite (airline_booking.db)`);
+      console.log('');
+      console.log('Endpoints:');
+      console.log(`  • GET  http://localhost:${PORT}/health`);
+      console.log(`  • POST http://localhost:${PORT}/auth/login`);
+      console.log(`  • GET  http://localhost:${PORT}/flights/search`);
+      console.log(`  • POST http://localhost:${PORT}/bookings`);
+      console.log('');
+      console.log('Ready to accept connections...');
+      console.log('');
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {

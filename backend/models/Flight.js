@@ -2,19 +2,56 @@
 // FLIGHT MODEL - DATABASE LAYER
 // ============================================================
 
-const { pool } = require('../config/database');
+const { db } = require('../config/database');
+
+// Helper functions
+const runQuery = (query, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.all(query, params, (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
+        });
+    });
+};
+
+const runQuerySingle = (query, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.get(query, params, (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
+        });
+    });
+};
+
+const runInsert = (query, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.run(query, params, function(err) {
+            if (err) reject(err);
+            else resolve({ insertId: this.lastID, changes: this.changes });
+        });
+    });
+};
+
+const runUpdate = (query, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.run(query, params, function(err) {
+            if (err) reject(err);
+            else resolve({ changes: this.changes });
+        });
+    });
+};
 
 class FlightModel {
     // Create new flight
     static async create(flightData) {
         try {
-            const query = `INSERT INTO flights 
-                (airline_id, aircraft_id, flight_number, origin, destination, 
-                departure_time, arrival_time, price_economy, price_business, 
+            const query = `INSERT INTO flights
+                (airline_id, aircraft_id, flight_number, origin, destination,
+                departure_time, arrival_time, price_economy, price_business,
                 available_seats, total_seats, duration_minutes, stops)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            
-            const [result] = await pool.query(query, [
+
+            const result = await runInsert(query, [
                 flightData.airline_id,
                 flightData.aircraft_id,
                 flightData.flight_number,
@@ -39,11 +76,11 @@ class FlightModel {
     static async findById(flightId) {
         try {
             const query = `SELECT f.*, a.name as airline_name, a.primary_color, a.secondary_color
-                          FROM flights f 
-                          LEFT JOIN airlines a ON f.airline_id = a.id 
+                          FROM flights f
+                          LEFT JOIN airlines a ON f.airline_id = a.id
                           WHERE f.id = ?`;
-            const [rows] = await pool.query(query, [flightId]);
-            return rows.length > 0 ? rows[0] : null;
+            const row = await runQuerySingle(query, [flightId]);
+            return row || null;
         } catch (error) {
             throw error;
         }
@@ -53,14 +90,14 @@ class FlightModel {
     static async searchByRoute(origin, destination, departureDate) {
         try {
             const query = `SELECT f.*, a.name as airline_name, a.primary_color, a.secondary_color
-                          FROM flights f 
-                          LEFT JOIN airlines a ON f.airline_id = a.id 
-                          WHERE f.origin = ? AND f.destination = ? 
-                          AND DATE(f.departure_time) = ? 
-                          AND f.status = 'scheduled' 
-                          AND f.is_active = TRUE
+                          FROM flights f
+                          LEFT JOIN airlines a ON f.airline_id = a.id
+                          WHERE f.origin = ? AND f.destination = ?
+                          AND DATE(f.departure_time) = ?
+                          AND f.status = 'scheduled'
+                          AND f.is_active = 1
                           ORDER BY f.departure_time ASC`;
-            const [rows] = await pool.query(query, [origin, destination, departureDate]);
+            const rows = await runQuery(query, [origin, destination, departureDate]);
             return rows;
         } catch (error) {
             throw error;
@@ -70,13 +107,13 @@ class FlightModel {
     // Get all flights
     static async getAll(limit = 50, offset = 0) {
         try {
-            const query = `SELECT f.*, a.name as airline_name 
-                          FROM flights f 
-                          LEFT JOIN airlines a ON f.airline_id = a.id 
-                          WHERE f.is_active = TRUE 
-                          ORDER BY f.departure_time DESC 
+            const query = `SELECT f.*, a.name as airline_name
+                          FROM flights f
+                          LEFT JOIN airlines a ON f.airline_id = a.id
+                          WHERE f.is_active = 1
+                          ORDER BY f.departure_time DESC
                           LIMIT ? OFFSET ?`;
-            const [rows] = await pool.query(query, [limit, offset]);
+            const rows = await runQuery(query, [limit, offset]);
             return rows;
         } catch (error) {
             throw error;
@@ -87,7 +124,7 @@ class FlightModel {
     static async updateStatus(flightId, status) {
         try {
             const query = `UPDATE flights SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-            const [result] = await pool.query(query, [status, flightId]);
+            const result = await runUpdate(query, [status, flightId]);
             return result;
         } catch (error) {
             throw error;
@@ -98,7 +135,7 @@ class FlightModel {
     static async updateAvailableSeats(flightId, availableSeats) {
         try {
             const query = `UPDATE flights SET available_seats = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-            const [result] = await pool.query(query, [availableSeats, flightId]);
+            const result = await runUpdate(query, [availableSeats, flightId]);
             return result;
         } catch (error) {
             throw error;
@@ -108,13 +145,13 @@ class FlightModel {
     // Get flights by airline
     static async getByAirline(airlineId, limit = 50, offset = 0) {
         try {
-            const query = `SELECT f.*, a.name as airline_name 
-                          FROM flights f 
-                          LEFT JOIN airlines a ON f.airline_id = a.id 
-                          WHERE f.airline_id = ? AND f.is_active = TRUE 
-                          ORDER BY f.departure_time DESC 
+            const query = `SELECT f.*, a.name as airline_name
+                          FROM flights f
+                          LEFT JOIN airlines a ON f.airline_id = a.id
+                          WHERE f.airline_id = ? AND f.is_active = 1
+                          ORDER BY f.departure_time DESC
                           LIMIT ? OFFSET ?`;
-            const [rows] = await pool.query(query, [airlineId, limit, offset]);
+            const rows = await runQuery(query, [airlineId, limit, offset]);
             return rows;
         } catch (error) {
             throw error;
