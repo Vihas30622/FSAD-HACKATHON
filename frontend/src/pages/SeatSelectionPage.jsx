@@ -151,22 +151,22 @@ export default function SeatSelectionPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Airplane Seat Layout */}
         <div className="lg:col-span-8 bg-surface-container-low rounded-xl p-8">
-          <div className="flex flex-wrap justify-center gap-6 mb-12 bg-surface-container-lowest/80 p-4 rounded-full border border-outline-variant/20">
+          <div className="flex flex-wrap justify-center gap-6 mb-12 bg-surface-container-lowest/90 p-4 rounded-full border border-outline-variant/20">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-tertiary-container"></div>
-              <span className="text-xs font-medium">Available</span>
+              <div className="w-4 h-4 rounded bg-emerald-500 border border-emerald-700"></div>
+              <span className="text-xs font-semibold text-white">Available</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-error/40"></div>
-              <span className="text-xs font-medium">Booked</span>
+              <div className="w-4 h-4 rounded bg-red-600 border border-red-700"></div>
+              <span className="text-xs font-semibold text-white">Booked</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-secondary"></div>
-              <span className="text-xs font-medium">Selected</span>
+              <div className="w-4 h-4 rounded bg-blue-600 border border-blue-700"></div>
+              <span className="text-xs font-semibold text-white">Selected</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-primary-container"></div>
-              <span className="text-xs font-medium">Business</span>
+              <div className="w-4 h-4 rounded bg-orange-400 border border-orange-600"></div>
+              <span className="text-xs font-semibold text-white">Business</span>
             </div>
           </div>
 

@@ -13,12 +13,28 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminDashboard from './pages/AdminDashboard'
 import { AirlineThemeProvider } from './context/AirlineThemeContext'
+import { Grainient } from './components/Grainient'
 
 function App() {
   return (
     <AirlineThemeProvider>
       <Router>
-        <div className="flex flex-col min-h-screen">
+        {/* Animated gradient background */}
+        <Grainient
+          color1="#ff671f"
+          color2="#ffffff"
+          color3="#046a38"
+          timeSpeed={0.25}
+          warpFrequency={5.4}
+          warpSpeed={2}
+          warpAmplitude={50}
+          noiseScale={2}
+          grainAmount={0.1}
+          contrast={1.5}
+        />
+
+        {/* Main content */}
+        <div className="relative z-10 flex flex-col min-h-screen bg-black bg-opacity-5">
           <Navbar />
           <main className="flex-grow">
             <Routes>

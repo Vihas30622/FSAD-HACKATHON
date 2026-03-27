@@ -1,16 +1,16 @@
 export default function SeatComponent({ seat, isSelected, onSelect }) {
   const getSeatClasses = () => {
     if (seat.status === 'booked') {
-      return 'bg-red-500 text-white cursor-not-allowed opacity-60'
+      return 'bg-red-600 text-white cursor-not-allowed ring-2 ring-red-300 opacity-90'
     }
     if (isSelected) {
-      return 'bg-blue-500 text-white ring-4 ring-blue-300'
+      return 'bg-blue-600 text-white ring-4 ring-blue-300 shadow-lg'
     }
     if (seat.seat_class === 'business' || seat.seat_class === 'premium') {
-      return 'bg-yellow-400 text-gray-900'
+      return 'bg-orange-400 text-slate-900 ring-1 ring-orange-100 font-bold'
     }
     // available
-    return 'bg-green-500 text-white'
+    return 'bg-emerald-500 text-white ring-1 ring-emerald-200 hover:bg-emerald-600'
   }
 
   return (

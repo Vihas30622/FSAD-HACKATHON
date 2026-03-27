@@ -9,7 +9,7 @@ const Navbar = () => {
   } : {};
 
   return (
-    <nav className="glass-panel sticky top-0 z-50 transition-colors duration-500" 
+    <nav className="glass-panel sticky top-0 z-50 transition-colors duration-500 bg-gradient-to-r from-indigo-700 via-blue-700 to-indigo-900" 
          style={themeConfig.airline ? navGradientStyle : {}}>
       {!themeConfig.airline && (
         <div className="h-1 w-full bg-tricolor-bar"></div>
@@ -17,7 +17,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
-            <Link to="/" className={`text-3xl font-display font-bold tracking-tight ${themeConfig.airline ? 'text-white' : 'text-india-blue'}`}>
+            <Link to="/" className={`text-3xl font-display font-bold tracking-tight tricolor-text ${themeConfig.airline ? '' : ''}`}>
               Bharat Airways
             </Link>
           </div>
